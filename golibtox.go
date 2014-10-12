@@ -278,7 +278,7 @@ func (t *Tox) AddFriend(address []byte, data []byte) (int32, error) {
 		return 0, ErrBadTox
 	}
 
-	if len(address) != FRIEND_ADDRESS_SIZE {
+	if len(address) != FRIEND_ADDRESS_SIZE || len(data) == 0 {
 		return 0, ErrArgs
 	}
 
