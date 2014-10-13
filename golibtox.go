@@ -691,6 +691,9 @@ func (t *Tox) GetFriendlist() ([]int32, error) {
 
 	size, _ := t.CountFriendlist()
 	cfriendlist := make([]int32, size)
+	if size == 0 {
+		return cfriendlist[:0], nil
+	}
 
 	n := C.tox_get_friendlist(t.tox, (*C.int32_t)(&cfriendlist[0]), (C.uint32_t)(size))
 
