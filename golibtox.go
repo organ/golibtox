@@ -24,7 +24,7 @@ void hook_callback_user_status(Tox*, int32_t, uint8_t, void*);
 void hook_callback_typing_change(Tox*, int32_t, uint8_t, void*);
 void hook_callback_read_receipt(Tox*, int32_t, uint32_t, void*);
 void hook_callback_connection_status(Tox*, int32_t, uint8_t, void*);
-void hook_callback_group_invite(Tox*, int32_t, const uint8_t*, void*);
+void hook_callback_group_invite(Tox*, int32_t, uint8_t, const uint8_t*, uint16_t, void*);
 void hook_callback_group_message(Tox*, int, int, const uint8_t*, uint16_t, void*);
 void hook_callback_group_action(Tox*, int, int, const uint8_t*, uint16_t, void*);
 void hook_callback_group_namelist_change(Tox*, int, int, uint8_t, void*);
@@ -87,7 +87,7 @@ type OnReadReceipt func(tox *Tox, friendnumber int32, receipt uint32)
 type OnConnectionStatus func(tox *Tox, friendnumber int32, online bool)
 
 // OnGroupInvite is a callback function called by Tox when receiving a Groupchat invite.
-type OnGroupInvite func(tox *Tox, friendnumber int32, groupPublicKey []byte)
+type OnGroupInvite func(tox *Tox, friendnumber int32, _type uint8, groupPublicKey []byte, length uint16)
 
 // OnGroupMessage is a callback function called by Tox when receiving a Groupchat message.
 type OnGroupMessage func(tox *Tox, groupnumber int, friendgroupnumber int, message []byte, length uint16)
@@ -794,7 +794,7 @@ func (t *Tox) JoinGroupchat(friendnumber int32, friendGroupPublicKey []byte) (in
 		return -1, ErrArgs
 	}
 
-	ret := C.tox_join_groupchat(t.tox, (C.int32_t)(friendnumber), (*C.uint8_t)(&friendGroupPublicKey[0]))
+	ret := C.tox_join_groupchat(t.tox, (C.int32_t)(friendnumber), (*C.uint8_t)(&friendGroupPublicKey[0]), (C.uint16_t)(friendGroupPublicKey[1]))
 
 	if ret == -1 {
 		return -1, ErrFuncFail
@@ -813,7 +813,7 @@ func (t *Tox) GroupMessageSend(groupnumber int, message []byte) error {
 		return ErrArgs
 	}
 
-	ret := C.tox_group_message_send(t.tox, (C.int)(groupnumber), (*C.uint8_t)(&message[0]), (C.uint32_t)(len(message)))
+	ret := C.tox_group_message_send(t.tox, (C.int)(groupnumber), (*C.uint8_t)(&message[0]), (C.uint16_t)(len(message)))
 
 	if ret == -1 {
 		return ErrFuncFail
@@ -832,7 +832,7 @@ func (t *Tox) GroupActionSend(groupnumber int, action []byte) error {
 		return ErrArgs
 	}
 
-	ret := C.tox_group_action_send(t.tox, (C.int)(groupnumber), (*C.uint8_t)(&action[0]), (C.uint32_t)(len(action)))
+	ret := C.tox_group_action_send(t.tox, (C.int)(groupnumber), (*C.uint8_t)(&action[0]), (C.uint16_t)(len(action)))
 
 	if ret == -1 {
 		return ErrFuncFail
@@ -888,7 +888,7 @@ func (t *Tox) GetChatlist() ([]int, error) {
 	size, _ := t.CountChatlist()
 	cchatlist := make([]int, size)
 
-	n := C.tox_get_chatlist(t.tox, (*C.int)(unsafe.Pointer(&cchatlist[0])), (C.uint32_t)(size))
+	n := C.tox_get_chatlist(t.tox, (*C.int32_t)(unsafe.Pointer(&cchatlist[0])), (C.uint32_t)(size))
 
 	chatlist := cchatlist[:n]
 
