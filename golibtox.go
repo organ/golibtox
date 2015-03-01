@@ -130,6 +130,12 @@ type Tox struct {
 	onFileData            OnFileData
 }
 
+const (
+	ProxyNone = iota
+	ProxySOCKS5 = iota
+	ProxyHTTP = iota
+)
+
 type Options struct {
 	// If IPv6Enabled is true, both IPv6 and IPv4 connections are allowed.
 	IPv6Enabled bool
@@ -138,7 +144,7 @@ type Options struct {
 	UDPDisabled bool
 
 	// ProxyEnabled enables proxy support (only SOCKS5 currently supported).
-	ProxyEnabled bool
+	ProxyType    uint8
 	ProxyAddress string
 	ProxyPort    uint16
 }
@@ -157,12 +163,8 @@ func New(o *Options) (*Tox, error) {
 		if o.UDPDisabled {
 			cUDPDisabled = (C.uint8_t)(1)
 		}
-		cProxyEnabled := (C.uint8_t)(0)
-		if o.ProxyEnabled {
-			cProxyEnabled = (C.uint8_t)(1)
-		}
+		cProxyType := (C.uint8_t)(o.ProxyType)
 		cProxyPort := (C.uint16_t)(o.ProxyPort)
-
 		// Max ProxyAddress length is 255
 		if len(o.ProxyAddress) > 255 {
 			return nil, ErrArgs
@@ -178,7 +180,7 @@ func New(o *Options) (*Tox, error) {
 		co := &C.Tox_Options{
 			ipv6enabled:   cIPv6Enabled,
 			udp_disabled:  cUDPDisabled,
-			proxy_enabled: cProxyEnabled,
+			proxy_type:    cProxyType,
 			proxy_address: cProxyAddress,
 			proxy_port:    cProxyPort}
 
