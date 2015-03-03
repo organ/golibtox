@@ -130,12 +130,6 @@ type Tox struct {
 	onFileData            OnFileData
 }
 
-const (
-	ProxyNone = iota
-	ProxySOCKS5 = iota
-	ProxyHTTP = iota
-)
-
 type Options struct {
 	// If IPv6Enabled is true, both IPv6 and IPv4 connections are allowed.
 	IPv6Enabled bool
@@ -144,7 +138,7 @@ type Options struct {
 	UDPDisabled bool
 
 	// ProxyEnabled enables proxy support (only SOCKS5 currently supported).
-	ProxyType    uint8
+	ProxyType    ProxyType
 	ProxyAddress string
 	ProxyPort    uint16
 }
