@@ -60,8 +60,8 @@ func hook_callback_connection_status(t unsafe.Pointer, friendnumber C.int32_t, c
 }
 
 //export hook_callback_group_invite
-func hook_callback_group_invite(t unsafe.Pointer, friendnumber C.int32_t, groupPublicKey *C.uint8_t, tox unsafe.Pointer) {
-	(*Tox)(tox).onGroupInvite((*Tox)(tox), int32(friendnumber), C.GoBytes((unsafe.Pointer)(groupPublicKey), CLIENT_ID_SIZE))
+func hook_callback_group_invite(t unsafe.Pointer, friendnumber C.int32_t, _type C.uint8_t, groupPublicKey *C.uint8_t, length C.uint16_t, tox unsafe.Pointer) {
+	(*Tox)(tox).onGroupInvite((*Tox)(tox), int32(friendnumber), uint8(_type), C.GoBytes((unsafe.Pointer)(groupPublicKey), (C.int)(length)), uint16(length))
 }
 
 //export hook_callback_group_message
