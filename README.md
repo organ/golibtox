@@ -5,7 +5,7 @@ golibtox is a Go wrapper for the [Toxcore](https://github.com/irungentoo/toxcore
 
 ## UPDATE 2015-07-18
 Unfortunately I don't have the time to maintain this package anymore.
-You can find a well-maintened version [here](https://github.com/codedust/go-tox).
+You can find a well-maintained version [here](https://github.com/codedust/go-tox).
 
 ## Installation
 ```
